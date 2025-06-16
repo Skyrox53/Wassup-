@@ -94,14 +94,15 @@
       color: #888;
       text-align: center;
     }
-    .admin-badge {
-      display: inline-block;
-      background-color: #ff8c00;
-      color: black;
-      font-size: 0.75rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 5px;
-      margin-left: 0.5rem;
+    .hidden {
+      display: none;
+    }
+    #avatarPreview {
+      max-width: 150px;
+      max-height: 150px;
+      margin: 1rem auto;
+      display: block;
+      border-radius: 10px;
     }
   </style>
 </head>
@@ -123,6 +124,7 @@
     <div class="profile-section">
       <h3>Ton profil</h3>
       <input type="file" id="avatar" accept="image/*" />
+      <img id="avatarPreview" src="" class="hidden" alt="Prévisualisation de l'avatar">
       <input type="text" id="bio" placeholder="Bio libre...">
       <div class="suggestion">💡 Tu peux parler de tes passions, de ce que tu aimes faire le week-end ou de ce que tu cherches ici !</div>
       <input type="number" id="age" placeholder="Âge">
@@ -133,6 +135,7 @@
         <option value="Autre">Autre</option>
         <option value="Préfère ne pas dire">Préfère ne pas dire</option>
       </select>
+      <input type="text" id="customGender" placeholder="Précisez votre genre" class="hidden">
       <input type="text" id="intro" placeholder="Fusée d’intro (ex: ici pour discuter...)" />
       <input type="text" id="languages" placeholder="Langues parlées" />
       <input type="text" id="quote" placeholder="Citation préférée ou mantra ?" />
@@ -155,7 +158,8 @@
 
       <div class="profile-overview" id="profileOverview" style="display:none;">
         <h4>Profil personnel</h4>
-        <p><strong>ID :</strong> <span id="poId"></span> <span id="adminBadge" class="admin-badge" style="display:none;">Admin</span></p>
+        <img id="poAvatar" src="" alt="Avatar" style="max-width:100px;border-radius:8px;margin-bottom:1rem;">
+        <p><strong>ID :</strong> <span id="poId"></span></p>
         <p><strong>Âge :</strong> <span id="poAge"></span></p>
         <p><strong>Genre :</strong> <span id="poGender"></span></p>
         <p><strong>Bio libre :</strong> <span id="poBio"></span></p>
@@ -171,12 +175,38 @@
     </div>
   </div>
   <script>
-    const userId = Math.floor(Math.random() * 90000 + 10000).toString();
+    // Récupération ou création d'un ID unique localStorage
+    let userId = localStorage.getItem("wassupUserId");
+    if (!userId) {
+      userId = Math.floor(Math.random() * 90000 + 10000).toString();
+      localStorage.setItem("wassupUserId", userId);
+    }
     const dateCreated = new Date().toLocaleDateString();
     document.getElementById("userIdDisplay").textContent = userId;
 
     document.getElementById("isAdmin").addEventListener("change", (e) => {
       document.getElementById("verifyControls").style.display = e.target.checked ? "block" : "none";
+    });
+
+    document.getElementById("gender").addEventListener("change", function () {
+      const customGender = document.getElementById("customGender");
+      if (this.value === "Autre") {
+        customGender.classList.remove("hidden");
+      } else {
+        customGender.classList.add("hidden");
+      }
+    });
+
+    document.getElementById("avatar").addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("avatarPreview").src = e.target.result;
+          document.getElementById("avatarPreview").classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+      }
     });
 
     function giveVerification() {
@@ -187,7 +217,9 @@
     function showProfile() {
       document.getElementById("poId").textContent = userId;
       document.getElementById("poAge").textContent = document.getElementById("age").value || "Non renseigné";
-      document.getElementById("poGender").textContent = document.getElementById("gender").value || "Non renseigné";
+      const genderValue = document.getElementById("gender").value;
+      const custom = document.getElementById("customGender").value;
+      document.getElementById("poGender").textContent = genderValue === "Autre" ? custom : genderValue || "Non renseigné";
       document.getElementById("poBio").textContent = document.getElementById("bio").value || "Non renseigné";
       document.getElementById("poIntro").textContent = document.getElementById("intro").value || "-";
       document.getElementById("poLang").textContent = document.getElementById("languages").value || "-";
@@ -197,10 +229,8 @@
       document.getElementById("poActivity").textContent = document.getElementById("activity").value || "-";
       document.getElementById("poSocials").textContent = document.getElementById("socials").value || "-";
       document.getElementById("poSince").textContent = dateCreated;
-
-      const isAdmin = document.getElementById("isAdmin").checked;
-      document.getElementById("adminBadge").style.display = isAdmin ? "inline-block" : "none";
-
+      const avatarSrc = document.getElementById("avatarPreview").src;
+      document.getElementById("poAvatar").src = avatarSrc;
       document.getElementById("profileOverview").style.display = "block";
     }
 
