@@ -34,6 +34,116 @@
     }
     .container {
       padding: 2rem;
+      text-align: center;
+    }
+    .login-buttons {
+      margin-top: 2rem;
+    }
+    .login-buttons button {
+      display: block;
+      width: 250px;
+      margin: 1rem auto;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .google {
+      background-color: white;
+      color: black;
+    }
+    .apple {
+      background-color: black;
+      color: white;
+      border: 1px solid white;
+    }
+    .friend-section, .chat-section, .profile-section, .status-section, .group-section, .notification-section {
+      margin-top: 3rem;
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 0.5rem;
+      width: 200px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 0.5rem;
+    }
+    button {
+      margin-left: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      background-color: #1e90ff;
+      color: white;
+      cursor: pointer;
+    }
+    .friend-list {
+      margin-top: 1rem;
+    }
+    .friend-list li {
+      list-style: none;
+      margin: 0.25rem 0;
+    }
+    .rename-input {
+      margin-left: 0.5rem;
+      width: 150px;
+      padding: 0.25rem;
+      border-radius: 4px;
+      border: none;
+    }
+    .badge {
+      font-size: 0.7rem;
+      color: gold;
+      margin-left: 0.5rem;
+    }
+    .verified {
+      color: deepskyblue;
+      font-size: 0.9rem;
+      margin-left: 0.3rem;
+    }
+    .signal-button {
+      margin-left: 1rem;
+      font-size: 0.8rem;
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .chat-box {
+      background: #1c1c1c;
+      margin: 1rem auto;
+      padding: 1rem;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 8px;
+    }
+    .chat-messages {
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+      margin-bottom: 1rem;
+    }
+    .chat-input {
+      display: flex;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 5px 0 0 5px;
+      border: none;
+    }
+    .chat-input button {
+      border-radius: 0 5px 5px 0;
+    }
+    .profile-section input {
+      width: 300px;
+    }
+    .status {
+      margin-top: 1rem;
+      font-style: italic;
     }
   </style>
 </head>
@@ -46,8 +156,210 @@
     </div>
   </header>
   <div class="container">
-    <!-- Auth ou chat app ici -->
-    <p>Bienvenue sur l'application de chat Wassup! (en version HTML statique)</p>
+    <h2>Connecte-toi pour continuer</h2>
+    <div class="login-buttons">
+      <button class="google" onclick="loginWith('Google')">Se connecter avec Google</button>
+      <button class="apple" onclick="loginWith('Apple')">Se connecter avec Apple</button>
+    </div>
+
+    <div class="profile-section">
+      <h3>Ton profil</h3>
+      <input type="text" id="bio" placeholder="Bio ou intérêts...">
+      <input type="text" id="age" placeholder="Âge">
+      <div>
+        <input type="checkbox" id="isAdmin"> Je suis admin / fondateur
+      </div>
+      <div id="verifyControls" style="margin-top: 1rem; display: none;">
+        <input type="text" id="verifyUserId" placeholder="ID à vérifier">
+        <button onclick="giveVerification()">Donner vérification</button>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <h3>Statut</h3>
+      <button onclick="setStatus('online')">En ligne</button>
+      <button onclick="setStatus('invisible')">Invisible</button>
+      <div class="status" id="statusDisplay">Statut actuel : En ligne</div>
+    </div>
+
+    <div class="friend-section">
+      <h3>Ajouter un ami par ID</h3>
+      <input type="text" id="friendIdInput" placeholder="ID de l'ami" />
+      <button onclick="addFriend()">Ajouter</button>
+      <ul class="friend-list" id="friendList"></ul>
+    </div>
+
+    <div class="group-section">
+      <h3>Créer un groupe</h3>
+      <input type="text" id="groupNameInput" placeholder="Nom du groupe">
+      <button onclick="createGroup()">Créer</button>
+      <ul id="groupList"></ul>
+    </div>
+
+    <div class="chat-section">
+      <h3>Conversation</h3>
+      <div class="chat-box">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Tape ton message...">
+          <button onclick="sendMessage()">Envoyer</button>
+        </div>
+        <div class="chat-input">
+          <input type="text" id="gifInput" placeholder="URL du GIF">
+          <button onclick="sendGif()">Envoyer GIF</button>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    document.getElementById('isAdmin').addEventListener('change', (e) => {
+      document.getElementById('verifyControls').style.display = e.target.checked ? 'block' : 'none';
+    });
+
+    function giveVerification() {
+      const isAdmin = document.getElementById('isAdmin').checked;
+      if (!isAdmin) {
+        alert("Seuls les admins ou le fondateur peuvent faire ça.");
+        return;
+      }
+      const id = document.getElementById('verifyUserId').value.trim();
+      if (id) {
+        verified[id] = true;
+        alert(`L'utilisateur ${id} est maintenant vérifié.`);
+        updateFriendList();
+      }
+    }
+
+    function loginWith(provider) {
+      alert('Connexion via ' + provider + ' non encore implémentée.');
+    }
+
+    const friends = [];
+    const nicknames = {};
+    const badges = {
+      '1234': 'Fondateur',
+      '5678': 'Testeur'
+    };
+    const verified = {
+      '1234': true,
+      'admin1': true
+    };
+    const chatMessages = [];
+    const groups = [];
+
+    function addFriend() {
+      const input = document.getElementById('friendIdInput');
+      const id = input.value.trim();
+      if (id && !friends.includes(id)) {
+        friends.push(id);
+        input.value = '';
+        updateFriendList();
+      }
+    }
+
+    function signalUser(id) {
+      alert('Utilisateur ' + id + ' signalé. Merci pour votre vigilance.');
+    }
+
+    function updateFriendList() {
+      const list = document.getElementById('friendList');
+      list.innerHTML = '';
+      friends.forEach(id => {
+        const li = document.createElement('li');
+        const displayName = nicknames[id] || `Ami #${id}`;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = displayName;
+
+        if (verified[id]) {
+          const v = document.createElement('span');
+          v.textContent = '✔';
+          v.className = 'verified';
+          nameSpan.appendChild(v);
+        }
+
+        if (badges[id]) {
+          const badge = document.createElement('span');
+          badge.textContent = `(${badges[id]})`;
+          badge.className = 'badge';
+          nameSpan.appendChild(badge);
+        }
+
+        const renameInput = document.createElement('input');
+        renameInput.type = 'text';
+        renameInput.placeholder = 'Surnom';
+        renameInput.className = 'rename-input';
+        renameInput.onchange = () => {
+          const newName = renameInput.value.trim();
+          if (newName) {
+            nicknames[id] = newName;
+            updateFriendList();
+          }
+        };
+
+        const signalBtn = document.createElement('button');
+        signalBtn.textContent = 'Signaler';
+        signalBtn.className = 'signal-button';
+        signalBtn.onclick = () => signalUser(id);
+
+        li.appendChild(nameSpan);
+        li.appendChild(renameInput);
+        li.appendChild(signalBtn);
+        list.appendChild(li);
+      });
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      if (message) {
+        chatMessages.push(message);
+        input.value = '';
+        updateChat();
+      }
+    }
+
+    function sendGif() {
+      const input = document.getElementById('gifInput');
+      const gifUrl = input.value.trim();
+      if (gifUrl) {
+        chatMessages.push(`<img src="${gifUrl}" alt="GIF" style="max-width:100px;">`);
+        input.value = '';
+        updateChat();
+      }
+    }
+
+    function updateChat() {
+      const chatDiv = document.getElementById('chatMessages');
+      chatDiv.innerHTML = chatMessages.map(m => `<div>${m}</div>`).join('');
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    function setStatus(status) {
+      const display = document.getElementById('statusDisplay');
+      display.textContent = 'Statut actuel : ' + (status === 'online' ? 'En ligne' : 'Invisible');
+    }
+
+    function createGroup() {
+      const input = document.getElementById('groupNameInput');
+      const name = input.value.trim();
+      if (name) {
+        groups.push(name);
+        input.value = '';
+        updateGroupList();
+      }
+    }
+
+    function updateGroupList() {
+      const ul = document.getElementById('groupList');
+      ul.innerHTML = '';
+      groups.forEach(g => {
+        const li = document.createElement('li');
+        li.textContent = g;
+        ul.appendChild(li);
+      });
+    }
+  </script>
 </body>
 </html>
