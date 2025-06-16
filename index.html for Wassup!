@@ -1,1 +1,30 @@
+// src/App.jsx
+import React, { useState } from 'react';
+import ChatApp from './ChatApp';
+import AuthChatApp from './AuthChatApp';
+import logo from './assets/wassup-logo.png';
+
+export default function App() {
+  const [loggedInPseudo, setLoggedInPseudo] = useState(null);
+
+  return (
+    <div className="min-h-screen bg-gray-950 text-white">
+      {/* Header avec logo et titre */}
+      <header className="flex items-center gap-4 p-4 border-b border-gray-800">
+        <img src={logo} alt="Wassup! Logo" className="w-12 h-12 rounded" />
+        <div>
+          <h1 className="text-3xl font-bold">Wassup!</h1>
+          <p className="text-sm text-gray-400">Parle à ceux qui comptent.</p>
+        </div>
+      </header>
+
+      {/* Auth ou chat */}
+      {loggedInPseudo ? (
+        <ChatApp pseudo={loggedInPseudo} />
+      ) : (
+        <AuthChatApp onLogin={setLoggedInPseudo} />
+      )}
+    </div>
+  );
+}
 
