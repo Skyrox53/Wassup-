@@ -2,71 +2,77 @@ Wassup! - L'app qui connecte les potes
 
 Wassup! est une application de messagerie instantanée fun, moderne et intuitive, conçue pour discuter facilement avec ses amis. Que ce soit pour échanger des messages, envoyer des réactions ou créer des groupes privés, Wassup! rend la conversation simple, rapide et stylée.
 
-🎯 Slogan
+
+   🎯 Slogan
 
 "Wassup! – Parle à ceux qui comptent."
 
-🚀 Fonctionnalités principales
 
-🔔 Notifications en temps réel
+  🚀 Fonctionnalités principales
 
-💬 Chat 1v1 et en groupes
+-🔔 Notifications en temps réel
 
-👀 Statut en ligne / hors ligne
+-💬 Chat 1v1 et en groupes
 
-🎨 Interface fluide et moderne
+-👀 Statut en ligne / hors ligne
 
-📸 Partage rapide d'images, vidéos et GIFs
+-🎨 Interface fluide et moderne
 
-🕶️ Mode sombre inclus
+-📸 Partage rapide d'images, vidéos et GIFs
 
-🖼️ Identité visuelle
+-🕶️ Mode sombre inclus
 
-Logo & Icône :
+-🖼️ Identité visuelle
 
-Style : minimaliste, bulles de discussion / symbole "W" stylisé
 
-Couleurs : Bleu électrique (#3F8CFF) + blanc ou noir selon le thème
+   Logo & Icône :
 
-Polices suggérées : Poppins, Inter ou Montserrat
+-Style : minimaliste, bulles de discussion / symbole "W" stylisé
 
-Idée de logo : Un "W" arrondi dans une bulle de message avec une petite vibration graphique autour pour évoquer le mouvement / la notification.
+-Couleurs : Bleu électrique (#3F8CFF) + blanc ou noir selon le thème
 
-📱 Maquette d'interface (suggestion UI)
+-Polices suggérées : Poppins, Inter ou Montserrat
 
-Écran d'accueil :
+-Idée de logo : Un "W" arrondi dans une bulle de message avec une petite vibration graphique autour pour évoquer le mouvement / la notification.
 
-Logo "Wassup!" centré
 
-Boutons : "Se connecter" / "Créer un compte"
+   📱 Maquette d'interface (suggestion UI)
 
-Écran principal (après connexion) :
+  Écran d'accueil :
 
-Liste des discussions avec avatars, aperçu du dernier message
+-Logo "Wassup!" centré
 
-Barre de recherche en haut
+-Boutons : "Se connecter" / "Créer un compte"
 
-Bouton "+" pour nouveau message ou groupe
+-Écran principal (après connexion) :
 
-Écran de chat :
+-Liste des discussions avec avatars, aperçu du dernier message
 
-Bulles de messages personnalisables (bleu pour toi, gris pour l’autre)
+-Barre de recherche en haut
 
-Reactions par emoji
+-Bouton "+" pour nouveau message ou groupe
 
-Options rapides : appel vocal, visio, pièce jointe, etc.
+  Écran de chat :
 
-🛠️ Stack technique (exemple pour GitHub)
+-Bulles de messages personnalisables (bleu pour toi, gris pour l’autre)
 
-Frontend : Flutter / React Native
+-Reactions par emoji
 
-Backend : Firebase / Supabase / Node.js + MongoDB
+-Options rapides : appel vocal, visio, pièce jointe, etc.
 
-Authentification : Firebase Auth / OAuth
 
-Notifications : OneSignal ou Firebase Cloud Messaging (FCM)
+   🛠️ Stack technique (exemple pour GitHub)
 
-📦 Installation (dev)
+-Frontend : Flutter / React Native
+
+-Backend : Firebase / Supabase / Node.js + MongoDB
+
+-Authentification : Firebase Auth / OAuth
+
+-Notifications : OneSignal ou Firebase Cloud Messaging (FCM)
+
+
+   📦 Installation (dev)
 
 # Cloner le dépôt
 git clone https://github.com/votre-utilisateur/wassup.git
@@ -78,13 +84,16 @@ npm install
 # Lancer l'app (ex React Native)
 npx expo start
 
+
 🤝 Contribuer
 
 Les contributions sont les bienvenues ! N’hésitez pas à proposer des idées, corriger des bugs ou améliorer l’interface.
 
+
 📄 Licence
 
 Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus d’informations.
+
 
 🔗 Liens utiles
 
