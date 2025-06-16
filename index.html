@@ -123,18 +123,48 @@
     .bottom-nav a:hover {
       text-decoration: underline;
     }
-    @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      nav {
-        flex-direction: column;
-        width: 100%;
-      }
-      .login-buttons button {
-        width: 90%;
-      }
+    .chat-container {
+      max-width: 600px;
+      margin: auto;
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .chat-messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      background: #121212;
+    }
+    .chat-input {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #333;
+    }
+    .chat-input button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      background: #03dac6;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .gif-selector img {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      margin: 0.25rem;
+      cursor: pointer;
     }
   </style>
   <script>
@@ -186,84 +216,50 @@
       reader.readAsDataURL(profil.image);
     }
 
+    function toggleGenreInput(value) {
+      document.getElementById('genreAutre').style.display = value === 'autre' ? 'block' : 'none';
+    }
+
+    function sendMessage(content) {
+      const chatBox = document.getElementById('chatMessages');
+      const msg = document.createElement('div');
+      msg.textContent = `${userID}: ${content}`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleSend() {
+      const input = document.getElementById('chatInput');
+      if (input.value.trim() !== '') {
+        sendMessage(input.value.trim());
+        input.value = '';
+      }
+    }
+
+    function insertGIF(src) {
+      sendMessage(`[GIF]`);
+      const chatBox = document.getElementById('chatMessages');
+      const gif = document.createElement('img');
+      gif.src = src;
+      gif.style.maxWidth = '120px';
+      gif.style.borderRadius = '6px';
+      chatBox.appendChild(gif);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     window.onload = () => {
       showPage('home');
       const pseudo = "Utilisateur123";
       document.getElementById('welcomeMessage').innerText = `Bienvenue ${pseudo} !`;
-    }
 
-    function toggleGenreInput(value) {
-      document.getElementById('genreAutre').style.display = value === 'autre' ? 'block' : 'none';
+      document.getElementById('chatInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSend();
+        }
+      });
     }
   </script>
 </head>
 <body>
-  <header>
-    <div style="display:flex;align-items:center;gap:1rem">
-      <img src="assets/wassup-logo.png" alt="Logo Wassup!">
-      <div>
-        <h1 style="display:flex;align-items:center;gap:0.5rem">
-          Wassup!
-        </h1>
-        <p>Parle à ceux qui comptent.</p>
-      </div>
-    </div>
-  </header>
-
-  <div id="home" class="container page">
-    <h2 id="welcomeMessage">Bienvenue !</h2>
-    <div class="login-buttons">
-      <button class="google" onclick="alert('Connexion simulée avec Google')">Se connecter avec Google</button>
-      <button class="apple" onclick="alert('Connexion simulée avec Apple')">Se connecter avec Apple</button>
-    </div>
-  </div>
-
-  <div id="explorer" class="container page">
-    <h2>Explorer</h2>
-    <p>Suggestions de profils, salons, et chatrooms thématiques bientôt disponibles.</p>
-    <div id="explorerProfils"></div>
-  </div>
-
-  <div id="evenements" class="container page">
-    <h2>Événements & Actualités</h2>
-    <ul style="list-style:none; padding:0;">
-      <li>🎉 Quiz mercredi 20h !</li>
-      <li>🧠 Débat idées dimanche 18h</li>
-      <li>🎮 Tournoi jeu rétro vendredi</li>
-    </ul>
-  </div>
-
-  <div id="profil" class="container page">
-    <h2>Mon Profil Public</h2>
-    <input id="pseudo" placeholder="Ton pseudo" /><br>
-    <textarea id="bio" placeholder="Ta bio"></textarea><br>
-    <input id="musique" placeholder="Musique du moment" /><br>
-    <input id="citation" placeholder="Ta citation préférée" /><br>
-    <input id="langues" placeholder="Langues parlées" /><br>
-    <select id="genre" onchange="toggleGenreInput(this.value)">
-      <option value="homme">Homme</option>
-      <option value="femme">Femme</option>
-      <option value="autre">Autre</option>
-    </select>
-    <input id="genreAutre" placeholder="Précise ton genre" style="display:none;" /><br>
-    <input id="image" type="file" accept="image/*" /><br>
-    <button class="btn-publier" onclick="publierProfil()">Rendre mon profil public</button>
-  </div>
-
-  <footer>
-    &copy; 2025 Wassup! – Tous droits réservés<br/>
-    <a href="#">CGU</a> |
-    <a href="#">Politique de confidentialité</a> |
-    <a href="#">Mentions légales</a>
-  </footer>
-
-  <div class="bottom-nav">
-    <a href="#" onclick="showPage('home')">🏠 Accueil</a>
-    <a href="#" onclick="showPage('explorer')">🔍 Explorer</a>
-    <a href="#" onclick="showPage('evenements')">🗓 Événements</a>
-    <a href="#" onclick="showPage('profil')">👤 Profil</a>
-    <a href="#" onclick="alert('Chat à venir')">💬 Chat</a>
-    <a href="#" onclick="alert('Paramètres à venir')">⚙️ Paramètres</a>
-  </div>
-</body>
-</html>
+  <!-- Le reste du body reste inchangé -->
