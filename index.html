@@ -58,26 +58,16 @@
       color: white;
       border: 1px solid white;
     }
-    .friend-section, .chat-section, .profile-section, .status-section, .group-section, .notification-section {
-      margin-top: 3rem;
-      text-align: center;
-    }
-    input[type="text"], input[type="number"] {
+    input, select, textarea {
+      display: block;
+      margin: 0.5rem auto;
       padding: 0.5rem;
-      width: 200px;
+      width: 250px;
       border-radius: 5px;
       border: none;
-      margin-bottom: 0.5rem;
-    }
-    select {
-      padding: 0.5rem;
-      width: 220px;
-      border-radius: 5px;
-      border: none;
-      margin-bottom: 0.5rem;
     }
     button {
-      margin-left: 0.5rem;
+      margin: 0.5rem;
       padding: 0.5rem 1rem;
       border: none;
       border-radius: 5px;
@@ -90,12 +80,19 @@
       padding: 1rem;
       margin-top: 2rem;
       border-radius: 8px;
-      max-width: 500px;
+      max-width: 600px;
       margin-left: auto;
       margin-right: auto;
+      text-align: left;
     }
     .profile-overview h4 {
       margin-bottom: 1rem;
+      text-align: center;
+    }
+    .suggestion {
+      font-size: 0.85rem;
+      color: #888;
+      text-align: center;
     }
   </style>
 </head>
@@ -116,7 +113,9 @@
 
     <div class="profile-section">
       <h3>Ton profil</h3>
-      <input type="text" id="bio" placeholder="Bio ou intérêts...">
+      <input type="file" id="avatar" accept="image/*" />
+      <input type="text" id="bio" placeholder="Bio libre...">
+      <div class="suggestion">💡 Tu peux parler de tes passions, de ce que tu aimes faire le week-end ou de ce que tu cherches ici !</div>
       <input type="number" id="age" placeholder="Âge">
       <select id="gender">
         <option value="">Genre</option>
@@ -125,6 +124,14 @@
         <option value="Autre">Autre</option>
         <option value="Préfère ne pas dire">Préfère ne pas dire</option>
       </select>
+      <input type="text" id="intro" placeholder="Fusée d’intro (ex: ici pour discuter...)" />
+      <input type="text" id="languages" placeholder="Langues parlées" />
+      <input type="text" id="quote" placeholder="Citation préférée ou mantra ?" />
+      <input type="text" id="goal" placeholder="Ce que je recherche ici" />
+      <input type="text" id="music" placeholder="Musique ou artiste du moment 🎵" />
+      <input type="text" id="activity" placeholder="Niveau d’activité (ex: Connecté souvent)" />
+      <input type="text" id="socials" placeholder="Lien vers réseaux sociaux (facultatif)" />
+
       <div>
         <input type="checkbox" id="isAdmin"> Je suis admin / fondateur
       </div>
@@ -136,28 +143,56 @@
         <p>Ton ID : <span id="userIdDisplay"></span></p>
         <button onclick="showProfile()">Voir mon profil complet</button>
       </div>
+
       <div class="profile-overview" id="profileOverview" style="display:none;">
         <h4>Profil personnel</h4>
+        <p><strong>ID :</strong> <span id="poId"></span></p>
         <p><strong>Âge :</strong> <span id="poAge"></span></p>
         <p><strong>Genre :</strong> <span id="poGender"></span></p>
-        <p><strong>Bio / Intérêts :</strong> <span id="poBio"></span></p>
-        <p><strong>ID :</strong> <span id="poId"></span></p>
+        <p><strong>Bio libre :</strong> <span id="poBio"></span></p>
+        <p><strong>Intro :</strong> <span id="poIntro"></span></p>
+        <p><strong>Langues :</strong> <span id="poLang"></span></p>
+        <p><strong>Citation ?</strong> <span id="poQuote"></span></p>
+        <p><strong>Recherche :</strong> <span id="poGoal"></span></p>
+        <p><strong>🎵 Musique :</strong> <span id="poMusic"></span></p>
+        <p><strong>Activité :</strong> <span id="poActivity"></span></p>
+        <p><strong>Réseaux :</strong> <span id="poSocials"></span></p>
+        <p><strong>Ancienneté :</strong> <span id="poSince"></span></p>
       </div>
     </div>
   </div>
   <script>
-    let userId = Math.floor(Math.random() * 90000 + 10000).toString();
+    const userId = Math.floor(Math.random() * 90000 + 10000).toString();
+    const dateCreated = new Date().toLocaleDateString();
     document.getElementById("userIdDisplay").textContent = userId;
 
+    document.getElementById("isAdmin").addEventListener("change", (e) => {
+      document.getElementById("verifyControls").style.display = e.target.checked ? "block" : "none";
+    });
+
+    function giveVerification() {
+      const idToVerify = document.getElementById("verifyUserId").value;
+      alert(`✅ Utilisateur avec ID ${idToVerify} marqué comme vérifié.`);
+    }
+
     function showProfile() {
-      const age = document.getElementById("age").value;
-      const gender = document.getElementById("gender").value;
-      const bio = document.getElementById("bio").value;
-      document.getElementById("poAge").textContent = age || "Non renseigné";
-      document.getElementById("poGender").textContent = gender || "Non renseigné";
-      document.getElementById("poBio").textContent = bio || "Non renseigné";
       document.getElementById("poId").textContent = userId;
+      document.getElementById("poAge").textContent = document.getElementById("age").value || "Non renseigné";
+      document.getElementById("poGender").textContent = document.getElementById("gender").value || "Non renseigné";
+      document.getElementById("poBio").textContent = document.getElementById("bio").value || "Non renseigné";
+      document.getElementById("poIntro").textContent = document.getElementById("intro").value || "-";
+      document.getElementById("poLang").textContent = document.getElementById("languages").value || "-";
+      document.getElementById("poQuote").textContent = document.getElementById("quote").value || "-";
+      document.getElementById("poGoal").textContent = document.getElementById("goal").value || "-";
+      document.getElementById("poMusic").textContent = document.getElementById("music").value || "-";
+      document.getElementById("poActivity").textContent = document.getElementById("activity").value || "-";
+      document.getElementById("poSocials").textContent = document.getElementById("socials").value || "-";
+      document.getElementById("poSince").textContent = dateCreated;
       document.getElementById("profileOverview").style.display = "block";
+    }
+
+    function loginWith(provider) {
+      alert(`Connexion simulée avec ${provider}`);
     }
   </script>
 </body>
