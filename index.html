@@ -138,38 +138,62 @@
     }
   </style>
   <script>
+    function generateUniqueID() {
+      return 'ID-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    const userID = localStorage.getItem('userID') || generateUniqueID();
+    localStorage.setItem('userID', userID);
+
     function showPage(id) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
 
     function publierProfil() {
+      const genre = document.getElementById('genre').value;
+      const autreGenre = document.getElementById('genreAutre').value;
+      const finalGenre = genre === 'autre' ? autreGenre : genre;
       const profil = {
-        pseudo: "Utilisateur123",
-        bio: "Fan de science-fiction et café noir ☕",
-        musique: "Imagine Dragons",
-        citation: "Rêver grand ?",
-        langues: "Français, Anglais"
+        pseudo: document.getElementById('pseudo').value,
+        bio: document.getElementById('bio').value,
+        musique: document.getElementById('musique').value,
+        citation: document.getElementById('citation').value,
+        langues: document.getElementById('langues').value,
+        image: document.getElementById('image').files[0],
+        genre: finalGenre,
+        id: userID
       };
 
-      const explorer = document.getElementById('explorerProfils');
-      const card = document.createElement('div');
-      card.className = 'profile-card';
-      card.innerHTML = `
-        <h3>${profil.pseudo}</h3>
-        <p><strong>Bio:</strong> ${profil.bio}</p>
-        <p><strong>Musique:</strong> 🎵 ${profil.musique}</p>
-        <p><strong>Citation:</strong> "${profil.citation}"</p>
-        <p><strong>Langues:</strong> ${profil.langues}</p>
-      `;
-      explorer.appendChild(card);
-      alert("Ton profil est maintenant visible dans Explorer !");
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const explorer = document.getElementById('explorerProfils');
+        const card = document.createElement('div');
+        card.className = 'profile-card';
+        card.innerHTML = `
+          <img src="${e.target.result}" style="width:80px;height:80px;border-radius:50%"><br>
+          <h3>${profil.pseudo}</h3>
+          <p><strong>Genre:</strong> ${profil.genre}</p>
+          <p><strong>ID:</strong> ${profil.id}</p>
+          <p><strong>Bio:</strong> ${profil.bio}</p>
+          <p><strong>Musique:</strong> 🎵 ${profil.musique}</p>
+          <p><strong>Citation:</strong> "${profil.citation}"</p>
+          <p><strong>Langues:</strong> ${profil.langues}</p>
+        `;
+        explorer.appendChild(card);
+        alert("Ton profil est maintenant visible dans Explorer !");
+      };
+      reader.readAsDataURL(profil.image);
     }
 
     window.onload = () => {
       showPage('home');
       const pseudo = "Utilisateur123";
       document.getElementById('welcomeMessage').innerText = `Bienvenue ${pseudo} !`;
+    }
+
+    function toggleGenreInput(value) {
+      document.getElementById('genreAutre').style.display = value === 'autre' ? 'block' : 'none';
     }
   </script>
 </head>
@@ -211,7 +235,18 @@
 
   <div id="profil" class="container page">
     <h2>Mon Profil Public</h2>
-    <p>Bio, citation, musique du moment, langues, activité : tout sera affiché ici publiquement.</p>
+    <input id="pseudo" placeholder="Ton pseudo" /><br>
+    <textarea id="bio" placeholder="Ta bio"></textarea><br>
+    <input id="musique" placeholder="Musique du moment" /><br>
+    <input id="citation" placeholder="Ta citation préférée" /><br>
+    <input id="langues" placeholder="Langues parlées" /><br>
+    <select id="genre" onchange="toggleGenreInput(this.value)">
+      <option value="homme">Homme</option>
+      <option value="femme">Femme</option>
+      <option value="autre">Autre</option>
+    </select>
+    <input id="genreAutre" placeholder="Précise ton genre" style="display:none;" /><br>
+    <input id="image" type="file" accept="image/*" /><br>
     <button class="btn-publier" onclick="publierProfil()">Rendre mon profil public</button>
   </div>
 
@@ -227,6 +262,8 @@
     <a href="#" onclick="showPage('explorer')">🔍 Explorer</a>
     <a href="#" onclick="showPage('evenements')">🗓 Événements</a>
     <a href="#" onclick="showPage('profil')">👤 Profil</a>
+    <a href="#" onclick="alert('Chat à venir')">💬 Chat</a>
+    <a href="#" onclick="alert('Paramètres à venir')">⚙️ Paramètres</a>
   </div>
 </body>
 </html>
