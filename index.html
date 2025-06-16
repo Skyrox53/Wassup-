@@ -159,107 +159,57 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .gif-selector img {
+    .gif-panel {
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      padding: 0.5rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+    .gif-panel img {
       width: 60px;
       height: 60px;
-      border-radius: 6px;
       margin: 0.25rem;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .gif-toggle {
+      background: #444;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
       cursor: pointer;
     }
   </style>
   <script>
-    function generateUniqueID() {
-      return 'ID-' + Math.random().toString(36).substr(2, 9);
+    function toggleGifPanel() {
+      const panel = document.getElementById('gifPanel');
+      panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
     }
 
-    const userID = localStorage.getItem('userID') || generateUniqueID();
-    localStorage.setItem('userID', userID);
-
-    function showPage(id) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-    }
-
-    function publierProfil() {
-      const genre = document.getElementById('genre').value;
-      const autreGenre = document.getElementById('genreAutre').value;
-      const finalGenre = genre === 'autre' ? autreGenre : genre;
-      const profil = {
-        pseudo: document.getElementById('pseudo').value,
-        bio: document.getElementById('bio').value,
-        musique: document.getElementById('musique').value,
-        citation: document.getElementById('citation').value,
-        langues: document.getElementById('langues').value,
-        image: document.getElementById('image').files[0],
-        genre: finalGenre,
-        id: userID
-      };
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const explorer = document.getElementById('explorerProfils');
-        const card = document.createElement('div');
-        card.className = 'profile-card';
-        card.innerHTML = `
-          <img src="${e.target.result}" style="width:80px;height:80px;border-radius:50%"><br>
-          <h3>${profil.pseudo}</h3>
-          <p><strong>Genre:</strong> ${profil.genre}</p>
-          <p><strong>ID:</strong> ${profil.id}</p>
-          <p><strong>Bio:</strong> ${profil.bio}</p>
-          <p><strong>Musique:</strong> 🎵 ${profil.musique}</p>
-          <p><strong>Citation:</strong> "${profil.citation}"</p>
-          <p><strong>Langues:</strong> ${profil.langues}</p>
-        `;
-        explorer.appendChild(card);
-        alert("Ton profil est maintenant visible dans Explorer !");
-      };
-      reader.readAsDataURL(profil.image);
-    }
-
-    function toggleGenreInput(value) {
-      document.getElementById('genreAutre').style.display = value === 'autre' ? 'block' : 'none';
-    }
-
-    function sendMessage(content) {
-      const chatBox = document.getElementById('chatMessages');
-      const msg = document.createElement('div');
-      msg.textContent = `${userID}: ${content}`;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    function handleSend() {
+    function selectGif(src) {
       const input = document.getElementById('chatInput');
-      if (input.value.trim() !== '') {
-        sendMessage(input.value.trim());
-        input.value = '';
-      }
-    }
-
-    function insertGIF(src) {
-      sendMessage(`[GIF]`);
-      const chatBox = document.getElementById('chatMessages');
-      const gif = document.createElement('img');
-      gif.src = src;
-      gif.style.maxWidth = '120px';
-      gif.style.borderRadius = '6px';
-      chatBox.appendChild(gif);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
-
-    window.onload = () => {
-      showPage('home');
-      const pseudo = "Utilisateur123";
-      document.getElementById('welcomeMessage').innerText = `Bienvenue ${pseudo} !`;
-
-      document.getElementById('chatInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          handleSend();
-        }
-      });
+      input.value += ` [GIF: ${src}] `;
     }
   </script>
 </head>
 <body>
-  <!-- Le reste du body reste inchangé -->
+  <div class="chat-container">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Écris ton message ici...">
+      <button onclick="sendMessage()">Envoyer</button>
+      <button class="gif-toggle" onclick="toggleGifPanel()">GIF</button>
+    </div>
+    <div class="gif-panel" id="gifPanel">
+      <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" onclick="selectGif(this.src)" />
+      <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" onclick="selectGif(this.src)" />
+      <img src="https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif" onclick="selectGif(this.src)" />
+    </div>
+  </div>
+</body>
+</html>
