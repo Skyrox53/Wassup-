@@ -45,62 +45,11 @@
       padding: 2rem;
       text-align: center;
     }
-    .login-buttons {
-      margin-top: 2rem;
-    }
-    .login-buttons button {
-      display: block;
-      width: 250px;
-      margin: 1rem auto;
-      padding: 0.75rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .google {
-      background-color: white;
-      color: black;
-    }
-    .apple {
-      background-color: black;
-      color: white;
-      border: 1px solid white;
-    }
     .page {
       display: none;
     }
     .active {
       display: block;
-    }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      border-top: 1px solid #333;
-      color: #aaa;
-      font-size: 0.9rem;
-    }
-    footer a {
-      color: #aaa;
-      margin: 0 0.5rem;
-      text-decoration: underline;
-    }
-    .profile-card {
-      background-color: #1a1a1a;
-      padding: 1rem;
-      margin: 1rem auto;
-      border-radius: 10px;
-      max-width: 500px;
-    }
-    .btn-publier {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      background: #03dac6;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
     }
     .bottom-nav {
       position: fixed;
@@ -125,7 +74,7 @@
     }
     .chat-container {
       max-width: 600px;
-      margin: auto;
+      margin: 6rem auto 5rem;
       background: #1a1a1a;
       padding: 1rem;
       border-radius: 8px;
@@ -161,20 +110,35 @@
     }
     .gif-panel {
       display: none;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-start;
       background: #2a2a2a;
       border: 1px solid #444;
       padding: 0.5rem;
       border-radius: 8px;
       margin-top: 1rem;
     }
+    .gif-selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
     .gif-panel img {
       width: 60px;
       height: 60px;
-      margin: 0.25rem;
       cursor: pointer;
       border-radius: 6px;
+    }
+    .gif-history {
+      margin-top: 0.5rem;
+      border-top: 1px solid #555;
+      padding-top: 0.5rem;
+    }
+    .gif-history-title {
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: #aaa;
     }
     .gif-toggle {
       background: #444;
@@ -186,6 +150,8 @@
     }
   </style>
   <script>
+    let gifHistory = [];
+
     function toggleGifPanel() {
       const panel = document.getElementById('gifPanel');
       panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
@@ -194,10 +160,32 @@
     function selectGif(src) {
       const input = document.getElementById('chatInput');
       input.value += ` [GIF: ${src}] `;
+      if (!gifHistory.includes(src)) {
+        gifHistory.push(src);
+        updateGifHistory();
+      }
+    }
+
+    function updateGifHistory() {
+      const historyDiv = document.getElementById('gifHistory');
+      historyDiv.innerHTML = '<div class="gif-history-title">Historique</div>';
+      gifHistory.slice(-6).forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.onclick = () => selectGif(src);
+        historyDiv.appendChild(img);
+      });
     }
   </script>
 </head>
 <body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <img src="dhlg5ode.png" alt="Logo">
+      <h1>Wassup!</h1>
+    </div>
+  </header>
+
   <div class="chat-container">
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
@@ -206,10 +194,20 @@
       <button class="gif-toggle" onclick="toggleGifPanel()">GIF</button>
     </div>
     <div class="gif-panel" id="gifPanel">
-      <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" onclick="selectGif(this.src)" />
-      <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" onclick="selectGif(this.src)" />
-      <img src="https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif" onclick="selectGif(this.src)" />
+      <div class="gif-selection">
+        <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" onclick="selectGif(this.src)" />
+        <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" onclick="selectGif(this.src)" />
+        <img src="https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif" onclick="selectGif(this.src)" />
+      </div>
+      <div class="gif-history" id="gifHistory"></div>
     </div>
+  </div>
+
+  <div class="bottom-nav">
+    <a href="#">💬 Chat</a>
+    <a href="#">👤 Profil</a>
+    <a href="#">⚙️ Paramètres</a>
+    <a href="#">🔍 Explorer</a>
   </div>
 </body>
 </html>
