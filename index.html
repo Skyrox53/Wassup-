@@ -62,9 +62,16 @@
       margin-top: 3rem;
       text-align: center;
     }
-    input[type="text"] {
+    input[type="text"], input[type="number"] {
       padding: 0.5rem;
       width: 200px;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 0.5rem;
+    }
+    select {
+      padding: 0.5rem;
+      width: 220px;
       border-radius: 5px;
       border: none;
       margin-bottom: 0.5rem;
@@ -78,72 +85,17 @@
       color: white;
       cursor: pointer;
     }
-    .friend-list {
-      margin-top: 1rem;
-    }
-    .friend-list li {
-      list-style: none;
-      margin: 0.25rem 0;
-    }
-    .rename-input {
-      margin-left: 0.5rem;
-      width: 150px;
-      padding: 0.25rem;
-      border-radius: 4px;
-      border: none;
-    }
-    .badge {
-      font-size: 0.7rem;
-      color: gold;
-      margin-left: 0.5rem;
-    }
-    .verified {
-      color: deepskyblue;
-      font-size: 0.9rem;
-      margin-left: 0.3rem;
-    }
-    .signal-button {
-      margin-left: 1rem;
-      font-size: 0.8rem;
-      background-color: red;
-      color: white;
-      border: none;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .chat-box {
-      background: #1c1c1c;
-      margin: 1rem auto;
+    .profile-overview {
+      background-color: #1c1c1c;
       padding: 1rem;
-      width: 90%;
-      max-width: 600px;
+      margin-top: 2rem;
       border-radius: 8px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    .chat-messages {
-      max-height: 200px;
-      overflow-y: auto;
-      text-align: left;
+    .profile-overview h4 {
       margin-bottom: 1rem;
-    }
-    .chat-input {
-      display: flex;
-    }
-    .chat-input input {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 5px 0 0 5px;
-      border: none;
-    }
-    .chat-input button {
-      border-radius: 0 5px 5px 0;
-    }
-    .profile-section input {
-      width: 300px;
-    }
-    .status {
-      margin-top: 1rem;
-      font-style: italic;
     }
   </style>
 </head>
@@ -165,7 +117,14 @@
     <div class="profile-section">
       <h3>Ton profil</h3>
       <input type="text" id="bio" placeholder="Bio ou intérêts...">
-      <input type="text" id="age" placeholder="Âge">
+      <input type="number" id="age" placeholder="Âge">
+      <select id="gender">
+        <option value="">Genre</option>
+        <option value="Homme">Homme</option>
+        <option value="Femme">Femme</option>
+        <option value="Autre">Autre</option>
+        <option value="Préfère ne pas dire">Préfère ne pas dire</option>
+      </select>
       <div>
         <input type="checkbox" id="isAdmin"> Je suis admin / fondateur
       </div>
@@ -173,192 +132,32 @@
         <input type="text" id="verifyUserId" placeholder="ID à vérifier">
         <button onclick="giveVerification()">Donner vérification</button>
       </div>
-    </div>
-
-    <div class="status-section">
-      <h3>Statut</h3>
-      <button onclick="setStatus('online')">En ligne</button>
-      <button onclick="setStatus('invisible')">Invisible</button>
-      <div class="status" id="statusDisplay">Statut actuel : En ligne</div>
-    </div>
-
-    <div class="friend-section">
-      <h3>Ajouter un ami par ID</h3>
-      <input type="text" id="friendIdInput" placeholder="ID de l'ami" />
-      <button onclick="addFriend()">Ajouter</button>
-      <ul class="friend-list" id="friendList"></ul>
-    </div>
-
-    <div class="group-section">
-      <h3>Créer un groupe</h3>
-      <input type="text" id="groupNameInput" placeholder="Nom du groupe">
-      <button onclick="createGroup()">Créer</button>
-      <ul id="groupList"></ul>
-    </div>
-
-    <div class="chat-section">
-      <h3>Conversation</h3>
-      <div class="chat-box">
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-          <input type="text" id="chatInput" placeholder="Tape ton message...">
-          <button onclick="sendMessage()">Envoyer</button>
-        </div>
-        <div class="chat-input">
-          <input type="text" id="gifInput" placeholder="URL du GIF">
-          <button onclick="sendGif()">Envoyer GIF</button>
-        </div>
+      <div>
+        <p>Ton ID : <span id="userIdDisplay"></span></p>
+        <button onclick="showProfile()">Voir mon profil complet</button>
+      </div>
+      <div class="profile-overview" id="profileOverview" style="display:none;">
+        <h4>Profil personnel</h4>
+        <p><strong>Âge :</strong> <span id="poAge"></span></p>
+        <p><strong>Genre :</strong> <span id="poGender"></span></p>
+        <p><strong>Bio / Intérêts :</strong> <span id="poBio"></span></p>
+        <p><strong>ID :</strong> <span id="poId"></span></p>
       </div>
     </div>
   </div>
-
   <script>
-    document.getElementById('isAdmin').addEventListener('change', (e) => {
-      document.getElementById('verifyControls').style.display = e.target.checked ? 'block' : 'none';
-    });
+    let userId = Math.floor(Math.random() * 90000 + 10000).toString();
+    document.getElementById("userIdDisplay").textContent = userId;
 
-    function giveVerification() {
-      const isAdmin = document.getElementById('isAdmin').checked;
-      if (!isAdmin) {
-        alert("Seuls les admins ou le fondateur peuvent faire ça.");
-        return;
-      }
-      const id = document.getElementById('verifyUserId').value.trim();
-      if (id) {
-        verified[id] = true;
-        alert(`L'utilisateur ${id} est maintenant vérifié.`);
-        updateFriendList();
-      }
-    }
-
-    function loginWith(provider) {
-      alert('Connexion via ' + provider + ' non encore implémentée.');
-    }
-
-    const friends = [];
-    const nicknames = {};
-    const badges = {
-      '1234': 'Fondateur',
-      '5678': 'Testeur'
-    };
-    const verified = {
-      '1234': true,
-      'admin1': true
-    };
-    const chatMessages = [];
-    const groups = [];
-
-    function addFriend() {
-      const input = document.getElementById('friendIdInput');
-      const id = input.value.trim();
-      if (id && !friends.includes(id)) {
-        friends.push(id);
-        input.value = '';
-        updateFriendList();
-      }
-    }
-
-    function signalUser(id) {
-      alert('Utilisateur ' + id + ' signalé. Merci pour votre vigilance.');
-    }
-
-    function updateFriendList() {
-      const list = document.getElementById('friendList');
-      list.innerHTML = '';
-      friends.forEach(id => {
-        const li = document.createElement('li');
-        const displayName = nicknames[id] || `Ami #${id}`;
-
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = displayName;
-
-        if (verified[id]) {
-          const v = document.createElement('span');
-          v.textContent = '✔';
-          v.className = 'verified';
-          nameSpan.appendChild(v);
-        }
-
-        if (badges[id]) {
-          const badge = document.createElement('span');
-          badge.textContent = `(${badges[id]})`;
-          badge.className = 'badge';
-          nameSpan.appendChild(badge);
-        }
-
-        const renameInput = document.createElement('input');
-        renameInput.type = 'text';
-        renameInput.placeholder = 'Surnom';
-        renameInput.className = 'rename-input';
-        renameInput.onchange = () => {
-          const newName = renameInput.value.trim();
-          if (newName) {
-            nicknames[id] = newName;
-            updateFriendList();
-          }
-        };
-
-        const signalBtn = document.createElement('button');
-        signalBtn.textContent = 'Signaler';
-        signalBtn.className = 'signal-button';
-        signalBtn.onclick = () => signalUser(id);
-
-        li.appendChild(nameSpan);
-        li.appendChild(renameInput);
-        li.appendChild(signalBtn);
-        list.appendChild(li);
-      });
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const message = input.value.trim();
-      if (message) {
-        chatMessages.push(message);
-        input.value = '';
-        updateChat();
-      }
-    }
-
-    function sendGif() {
-      const input = document.getElementById('gifInput');
-      const gifUrl = input.value.trim();
-      if (gifUrl) {
-        chatMessages.push(`<img src="${gifUrl}" alt="GIF" style="max-width:100px;">`);
-        input.value = '';
-        updateChat();
-      }
-    }
-
-    function updateChat() {
-      const chatDiv = document.getElementById('chatMessages');
-      chatDiv.innerHTML = chatMessages.map(m => `<div>${m}</div>`).join('');
-      chatDiv.scrollTop = chatDiv.scrollHeight;
-    }
-
-    function setStatus(status) {
-      const display = document.getElementById('statusDisplay');
-      display.textContent = 'Statut actuel : ' + (status === 'online' ? 'En ligne' : 'Invisible');
-    }
-
-    function createGroup() {
-      const input = document.getElementById('groupNameInput');
-      const name = input.value.trim();
-      if (name) {
-        groups.push(name);
-        input.value = '';
-        updateGroupList();
-      }
-    }
-
-    function updateGroupList() {
-      const ul = document.getElementById('groupList');
-      ul.innerHTML = '';
-      groups.forEach(g => {
-        const li = document.createElement('li');
-        li.textContent = g;
-        ul.appendChild(li);
-      });
+    function showProfile() {
+      const age = document.getElementById("age").value;
+      const gender = document.getElementById("gender").value;
+      const bio = document.getElementById("bio").value;
+      document.getElementById("poAge").textContent = age || "Non renseigné";
+      document.getElementById("poGender").textContent = gender || "Non renseigné";
+      document.getElementById("poBio").textContent = bio || "Non renseigné";
+      document.getElementById("poId").textContent = userId;
+      document.getElementById("profileOverview").style.display = "block";
     }
   </script>
 </body>
