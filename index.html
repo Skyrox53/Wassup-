@@ -94,6 +94,15 @@
       color: #888;
       text-align: center;
     }
+    .admin-badge {
+      display: inline-block;
+      background-color: #ff8c00;
+      color: black;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 5px;
+      margin-left: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -146,7 +155,7 @@
 
       <div class="profile-overview" id="profileOverview" style="display:none;">
         <h4>Profil personnel</h4>
-        <p><strong>ID :</strong> <span id="poId"></span></p>
+        <p><strong>ID :</strong> <span id="poId"></span> <span id="adminBadge" class="admin-badge" style="display:none;">Admin</span></p>
         <p><strong>Âge :</strong> <span id="poAge"></span></p>
         <p><strong>Genre :</strong> <span id="poGender"></span></p>
         <p><strong>Bio libre :</strong> <span id="poBio"></span></p>
@@ -188,6 +197,10 @@
       document.getElementById("poActivity").textContent = document.getElementById("activity").value || "-";
       document.getElementById("poSocials").textContent = document.getElementById("socials").value || "-";
       document.getElementById("poSince").textContent = dateCreated;
+
+      const isAdmin = document.getElementById("isAdmin").checked;
+      document.getElementById("adminBadge").style.display = isAdmin ? "inline-block" : "none";
+
       document.getElementById("profileOverview").style.display = "block";
     }
 
