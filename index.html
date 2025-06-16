@@ -148,9 +148,18 @@
       padding: 0.4rem 0.6rem;
       cursor: pointer;
     }
+    .clear-history {
+      background: #ff5555;
+      border: none;
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
   </style>
   <script>
-    let gifHistory = [];
+    let gifHistory = JSON.parse(localStorage.getItem('wassup_gif_history') || '[]');
 
     function toggleGifPanel() {
       const panel = document.getElementById('gifPanel');
@@ -162,6 +171,7 @@
       input.value += ` [GIF: ${src}] `;
       if (!gifHistory.includes(src)) {
         gifHistory.push(src);
+        localStorage.setItem('wassup_gif_history', JSON.stringify(gifHistory));
         updateGifHistory();
       }
     }
@@ -175,7 +185,62 @@
         img.onclick = () => selectGif(src);
         historyDiv.appendChild(img);
       });
+      const clearBtn = document.createElement('button');
+      clearBtn.textContent = 'Effacer';
+      clearBtn.className = 'clear-history';
+      clearBtn.onclick = () => {
+        gifHistory = [];
+        localStorage.removeItem('wassup_gif_history');
+        updateGifHistory();
+      };
+      historyDiv.appendChild(clearBtn);
     }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const value = input.value.trim();
+      if (!value) return;
+      const messagesDiv = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      if (value.includes('[GIF:')) {
+        const regex = /\[GIF: (.*?)\]/g;
+        const parts = value.split(regex);
+        parts.forEach(part => {
+          if (part.startsWith('http')) {
+            const img = document.createElement('img');
+            img.src = part;
+            img.style.maxWidth = '150px';
+            img.style.borderRadius = '6px';
+            img.style.margin = '5px 0';
+            messagesDiv.appendChild(img);
+          } else {
+            const span = document.createElement('div');
+            span.textContent = part;
+            messagesDiv.appendChild(span);
+          }
+        });
+      } else {
+        div.textContent = value;
+        messagesDiv.appendChild(div);
+      }
+      input.value = '';
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      saveMessages();
+    }
+
+    function saveMessages() {
+      localStorage.setItem('wassup_messages', document.getElementById('chatMessages').innerHTML);
+    }
+
+    function loadMessages() {
+      const stored = localStorage.getItem('wassup_messages');
+      if (stored) {
+        document.getElementById('chatMessages').innerHTML = stored;
+      }
+      updateGifHistory();
+    }
+
+    window.onload = loadMessages;
   </script>
 </head>
 <body>
