@@ -1,4 +1,3 @@
-Wassup! 👋
 Wassup! est une petite application web sociale en HTML/CSS/JS où tu peux :
 
 - Créer un profil avec une photo, une bio et une citation,
