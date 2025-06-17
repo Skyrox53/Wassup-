@@ -1,105 +1,28 @@
-Wassup! - L'app qui connecte les potes
+Wassup! 👋
+Wassup! est une petite application web sociale en HTML/CSS/JS où tu peux :
 
-Wassup! est une application de messagerie instantanée fun, moderne et intuitive, conçue pour discuter facilement avec ses amis. Que ce soit pour échanger des messages, envoyer des réactions ou créer des groupes privés, Wassup! rend la conversation simple, rapide et stylée.
+Créer un profil avec une photo, une bio et une citation,
 
+Rendre ton profil public pour être visible dans l’explorateur,
 
-   🎯 Slogan
+Discuter avec d'autres utilisateurs dans un espace chat,
 
-"Wassup! – Parle à ceux qui comptent."
+Explorer les profils publics,
 
+Basculer entre un thème clair et un thème sombre 🌙☀️
 
-  🚀 Fonctionnalités principales
+🧪 Projet front-end léger pour le fun, la découverte et un peu de style.
 
--🔔 Notifications en temps réel
+🔧 Fonctionnalités
+💬 Chat minimaliste : envoie et reçois des messages dans une interface épurée.
 
--💬 Chat 1v1 et en groupes
+👤 Création de profil personnalisable : upload d’image, texte, citation et statut public.
 
--👀 Statut en ligne / hors ligne
+🔍 Explorateur de profils publics : découvre les autres utilisateurs visibles.
 
--🎨 Interface fluide et moderne
+⚙️ Paramètres : un bouton pour changer le thème entre clair et sombre.
 
--📸 Partage rapide d'images, vidéos et GIFs
+📱 Responsive : adapté aux petits écrans grâce à Bootstrap.
 
--🕶️ Mode sombre inclus
-
--🖼️ Identité visuelle
-
-
-   Logo & Icône :
-
--Style : minimaliste, bulles de discussion / symbole "W" stylisé
-
--Couleurs : Bleu électrique (#3F8CFF) + blanc ou noir selon le thème
-
--Polices suggérées : Poppins, Inter ou Montserrat
-
--Idée de logo : Un "W" arrondi dans une bulle de message avec une petite vibration graphique autour pour évoquer le mouvement / la notification.
-
-
-   📱 Maquette d'interface (suggestion UI)
-
-  Écran d'accueil :
-
--Logo "Wassup!" centré
-
--Boutons : "Se connecter" / "Créer un compte"
-
--Écran principal (après connexion) :
-
--Liste des discussions avec avatars, aperçu du dernier message
-
--Barre de recherche en haut
-
--Bouton "+" pour nouveau message ou groupe
-
-  Écran de chat :
-
--Bulles de messages personnalisables (bleu pour toi, gris pour l’autre)
-
--Reactions par emoji
-
--Options rapides : appel vocal, visio, pièce jointe, etc.
-
-
-   🛠️ Stack technique (exemple pour GitHub)
-
--Frontend : Flutter / React Native
-
--Backend : Firebase / Supabase / Node.js + MongoDB
-
--Authentification : Firebase Auth / OAuth
-
--Notifications : OneSignal ou Firebase Cloud Messaging (FCM)
-
-
-   📦 Installation (dev)
-
-# Cloner le dépôt
-git clone https://github.com/votre-utilisateur/wassup.git
-
-# Installer les dépendances
-cd wassup
-npm install
-
-# Lancer l'app (ex React Native)
-npx expo start
-
-
-🤝 Contribuer
-
-Les contributions sont les bienvenues ! N’hésitez pas à proposer des idées, corriger des bugs ou améliorer l’interface.
-
-
-📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus d’informations.
-
-
-🔗 Liens utiles
-
-Site officiel (à venir)
-
-Discord de la communauté: https://discord.gg/H6tByWzMEa
-
-Suivre le projet sur Twitter et Instagram (à venir)
-
+🖼️ Aperçu
+<img width="601" alt="image" src="https://github.com/user-attachments/assets/b42e2b98-395e-4510-9c02-53cbc4830ee5" />
