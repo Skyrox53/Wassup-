@@ -1,114 +1,284 @@
-project-root/
-├── public/
-│   ├── index.html         <-- ton fichier HTML ici (renommé depuis Wassup Html)
-│   └── uploads/           <-- pour stocker les photos de profil
-├── server.js              <-- backend Node.js
-├── package.json           <-- fichier npm (créé avec npm init)
-
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wassup!</title>
-</head>
-<body>
-  <h1>Profil</h1>
-  <form id="profileForm" enctype="multipart/form-data">
-    <label>Bio: <input type="text" name="bio" /></label><br />
-    <label>Citation: <input type="text" name="citation" /></label><br />
-    <label>Photo de profil: <input type="file" name="photo" /></label><br />
-    <label>Rendre le profil public?
-      <input type="checkbox" name="isPublic" />
-    </label><br />
-    <button type="submit">Sauvegarder</button>
-  </form>
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
+      color: white;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+      position: sticky;
+      top: 0;
+      background-color: #0f0f0f;
+      z-index: 10;
+    }
+    header img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .container {
+      padding: 2rem;
+      text-align: center;
+    }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem 0;
+      border-top: 1px solid #333;
+      z-index: 20;
+    }
+    .bottom-nav a {
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .bottom-nav a:hover {
+      text-decoration: underline;
+    }
+    .chat-container, .explorer-container, .profile-container, .settings-container {
+      max-width: 600px;
+      margin: 6rem auto 5rem;
+      background: #1a1a1a;
+      padding: 1rem;
+      border-radius: 8px;
+      display: none;
+    }
+    .chat-messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      background: #121212;
+    }
+    .chat-input {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .chat-input input, .chat-input select {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #333;
+    }
+    .chat-input button, .gif-toggle {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      background: #03dac6;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .gif-panel {
+      display: none;
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      padding: 1rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      z-index: 30;
+    }
+    .gif-panel .gif-list img {
+      width: 64px;
+      height: 64px;
+      margin: 0.25rem;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    .gif-history {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #bbb;
+    }
+    .hidden {
+      display: none !important;
+    }
+    @media screen and (max-width: 600px) {
+      header h1 {
+        font-size: 1.2rem;
+      }
+      .chat-container {
+        margin: 5rem 1rem 5rem;
+      }
+    }
+    #chatMessages img {
+      margin: 4px 0;
+    }
+    .profile-form input, .profile-form textarea {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #333;
+      background-color: #2a2a2a;
+      color: white;
+    }
+    .profile-form button {
+      background: #03dac6;
+      color: black;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+    }
+  </style>
   <script>
-    const form = document.getElementById('profileForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(form);
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.chat-container, .explorer-container, .profile-container, .settings-container');
+      sections.forEach(section => section.style.display = 'none');
+      const target = document.getElementById(sectionId);
+      if (target) target.style.display = 'block';
+      if (sectionId === 'explorerSection') loadExplorer();
+    }
+
+    async function saveProfile() {
+      const bio = document.getElementById('bioInput').value;
+      const citation = document.getElementById('citationInput').value;
+      const isPublic = document.getElementById('publicToggle').checked;
+      const photoFile = document.getElementById('photoFile').files[0];
+
+      const formData = new FormData();
+      formData.append('bio', bio);
+      formData.append('citation', citation);
+      formData.append('isPublic', isPublic);
+      if (photoFile) formData.append('photo', photoFile);
 
       try {
-        const res = await fetch('http://localhost:3000/api/save-profile', {
+        await fetch('/api/save-profile', {
           method: 'POST',
           body: formData
         });
-        const data = await res.json();
-        if (data.success) alert('Profil sauvegardé !');
+        alert('Profil sauvegardé !');
+        loadExplorer();
       } catch (err) {
-        console.error(err);
-        alert('Erreur lors de la sauvegarde');
+        alert('Erreur de sauvegarde');
       }
+    }
+
+    async function loadExplorer() {
+      const explorerDiv = document.getElementById('explorerSection');
+      try {
+        const res = await fetch('/api/public-profiles');
+        const profiles = await res.json();
+        if (profiles.length === 0) {
+          explorerDiv.innerHTML = '<h2>🔍 Explorer</h2><p>Aucun profil public affiché.</p>';
+          return;
+        }
+        explorerDiv.innerHTML = '<h2>🔍 Explorer</h2>' + profiles.map(p => `
+          <div style="margin-top:1rem;text-align:left">
+            <img src="${p.photoUrl}" style="width:60px;height:60px;border-radius:8px" />
+            <p><strong>Bio:</strong> ${p.bio}</p>
+            <p><em>${p.citation}</em></p>
+          </div>`).join('');
+      } catch (err) {
+        explorerDiv.innerHTML = '<h2>🔍 Explorer</h2><p>Erreur de chargement.</p>';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      showSection('chatSection');
+      document.getElementById('photoFile').addEventListener('change', updatePhotoPreview);
     });
+
+    function updatePhotoPreview() {
+      const fileInput = document.getElementById('photoFile');
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const photoPreview = document.getElementById('photoPreview');
+          photoPreview.src = e.target.result;
+          photoPreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    }
   </script>
+</head>
+<body>
+  <header>
+    <img src="TON_LOGO_URL" alt="Logo" />
+    <h1>Wassup!</h1>
+  </header>
+
+  <div class="chat-container" id="chatSection">
+    <h2>💬 Chat</h2>
+    <div class="chat-messages" id="chatMessages">Aucun message</div>
+    <div class="chat-input">
+      <div class="chat-input-row">
+        <input type="text" placeholder="Ton message..." />
+        <button>Envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="explorerSection" class="explorer-container">
+    <h2>🔍 Explorer</h2>
+    <p>Chargement...</p>
+  </div>
+
+  <div id="profileSection" class="profile-container">
+    <h2>👤 Profil</h2>
+    <form class="profile-form" onsubmit="event.preventDefault(); saveProfile();">
+      <label for="photoFile">Choisis une photo de profil :</label>
+      <input type="file" id="photoFile" accept="image/*" />
+      <img id="photoPreview" src="" alt="Aperçu" style="max-width: 100px; margin-bottom: 1rem; display: none;" />
+      <textarea id="bioInput" rows="3" placeholder="Ta bio..."></textarea>
+      <input type="text" id="citationInput" placeholder="Ta citation ou mantra préféré..." />
+      <div style="margin: 1rem 0">
+        <label><input type="checkbox" id="publicToggle" /> Rendre ce profil public</label>
+      </div>
+      <button type="submit">💾 Enregistrer</button>
+    </form>
+  </div>
+
+  <div id="settingsSection" class="settings-container">
+    <h2>⚙️ Paramètres</h2>
+    <p>Personnalise ton expérience Wassup!</p>
+  </div>
+
+  <div class="bottom-nav">
+    <a onclick="showSection('chatSection')">💬 Chat</a>
+    <a onclick="showSection('explorerSection')">🔍 Explorer</a>
+    <a onclick="showSection('profileSection')">👤 Profil</a>
+    <a onclick="showSection('settingsSection')">⚙️ Paramètres</a>
+  </div>
 </body>
 </html>
-
-// package.json
-{
-  "name": "wassup-app",
-  "version": "1.0.0",
-  "description": "Application Wassup! (chat, profils, explorer...)",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "multer": "^1.4.5"
-  }
-}
-
-// server.js
-const express = require('express');
-const multer = require('multer');
-const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
-
-const app = express();
-const PORT = 3000;
-
-app.use(cors());
-app.use(express.static('public'));
-app.use(express.json());
-
-const upload = multer({ dest: 'public/uploads/' });
-
-let profiles = [];
-
-app.post('/api/save-profile', upload.single('photo'), (req, res) => {
-  const { bio, citation, isPublic } = req.body;
-  let photoUrl = '';
-
-  if (req.file) {
-    photoUrl = '/uploads/' + req.file.filename;
-  }
-
-  const newProfile = {
-    id: Date.now(),
-    bio,
-    citation,
-    isPublic: isPublic === 'true',
-    photoUrl
-  };
-
-  const existing = profiles.findIndex(p => p.id === newProfile.id);
-  if (existing >= 0) profiles[existing] = newProfile;
-  else profiles.push(newProfile);
-
-  res.status(200).json({ success: true });
-});
-
-app.get('/api/public-profiles', (req, res) => {
-  const publicProfiles = profiles.filter(p => p.isPublic);
-  res.json(publicProfiles);
-});
-
-app.listen(PORT, () => {
-  console.log(`Serveur démarré sur http://localhost:${PORT}`);
-});
