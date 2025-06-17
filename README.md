@@ -24,6 +24,6 @@ Basculer entre un thème clair et un thème sombre 🌙☀️
 
 📱 Responsive : adapté aux petits écrans grâce à Bootstrap.
 
-🖼️ Aperçu
+🖼️ Aperçu:
 
 <img width="601" alt="image" src="https://github.com/user-attachments/assets/b42e2b98-395e-4510-9c02-53cbc4830ee5" />
