@@ -58,3 +58,5 @@ Tu peux aussi ouvrir une issue pour suggérer une fonctionnalité ou reporter un
 
 Made with ❤️ & caffeine
 Par Skyrox53
+
+PS: l'app n'est pas encore finis, il reste des choses a améliorer.
