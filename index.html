@@ -1,278 +1,114 @@
+project-root/
+├── public/
+│   ├── index.html         <-- ton fichier HTML ici (renommé depuis Wassup Html)
+│   └── uploads/           <-- pour stocker les photos de profil
+├── server.js              <-- backend Node.js
+├── package.json           <-- fichier npm (créé avec npm init)
+
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wassup!</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0f0f0f;
-      color: white;
-    }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 1rem;
-      border-bottom: 1px solid #333;
-      position: sticky;
-      top: 0;
-      background-color: #0f0f0f;
-      z-index: 10;
-    }
-    header img {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-    }
-    nav {
-      display: flex;
-      gap: 1rem;
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .container {
-      padding: 2rem;
-      text-align: center;
-    }
-    .page {
-      display: none;
-    }
-    .active {
-      display: block;
-    }
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: #1a1a1a;
-      display: flex;
-      justify-content: space-around;
-      padding: 0.5rem 0;
-      border-top: 1px solid #333;
-      z-index: 20;
-    }
-    .bottom-nav a {
-      color: white;
-      text-decoration: none;
-      text-align: center;
-      font-size: 0.9rem;
-    }
-    .bottom-nav a:hover {
-      text-decoration: underline;
-    }
-    .chat-container {
-      max-width: 600px;
-      margin: 6rem auto 5rem;
-      background: #1a1a1a;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    .chat-messages {
-      height: 300px;
-      overflow-y: auto;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 0.5rem;
-      margin-bottom: 1rem;
-      background: #121212;
-    }
-    .chat-input {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-    .chat-input input {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #333;
-    }
-    .chat-input button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      background: #03dac6;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .gif-panel {
-      display: none;
-      flex-direction: column;
-      justify-content: flex-start;
-      background: #2a2a2a;
-      border: 1px solid #444;
-      padding: 0.5rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-    }
-    .gif-selection {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-    }
-    .gif-panel img {
-      width: 60px;
-      height: 60px;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-    .gif-history {
-      margin-top: 0.5rem;
-      border-top: 1px solid #555;
-      padding-top: 0.5rem;
-    }
-    .gif-history-title {
-      font-size: 0.9rem;
-      margin-bottom: 0.3rem;
-      color: #aaa;
-    }
-    .gif-toggle {
-      background: #444;
-      border: none;
-      color: white;
-      border-radius: 6px;
-      padding: 0.4rem 0.6rem;
-      cursor: pointer;
-    }
-    .clear-history {
-      background: #ff5555;
-      border: none;
-      color: white;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 0.5rem;
-    }
-  </style>
-  <script>
-    let gifHistory = JSON.parse(localStorage.getItem('wassup_gif_history') || '[]');
-
-    function toggleGifPanel() {
-      const panel = document.getElementById('gifPanel');
-      panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
-    }
-
-    function selectGif(src) {
-      const input = document.getElementById('chatInput');
-      input.value += ` [GIF: ${src}] `;
-      if (!gifHistory.includes(src)) {
-        gifHistory.push(src);
-        localStorage.setItem('wassup_gif_history', JSON.stringify(gifHistory));
-        updateGifHistory();
-      }
-    }
-
-    function updateGifHistory() {
-      const historyDiv = document.getElementById('gifHistory');
-      historyDiv.innerHTML = '<div class="gif-history-title">Historique</div>';
-      gifHistory.slice(-6).forEach(src => {
-        const img = document.createElement('img');
-        img.src = src;
-        img.onclick = () => selectGif(src);
-        historyDiv.appendChild(img);
-      });
-      const clearBtn = document.createElement('button');
-      clearBtn.textContent = 'Effacer';
-      clearBtn.className = 'clear-history';
-      clearBtn.onclick = () => {
-        gifHistory = [];
-        localStorage.removeItem('wassup_gif_history');
-        updateGifHistory();
-      };
-      historyDiv.appendChild(clearBtn);
-    }
-
-    function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const value = input.value.trim();
-      if (!value) return;
-      const messagesDiv = document.getElementById('chatMessages');
-      const div = document.createElement('div');
-      if (value.includes('[GIF:')) {
-        const regex = /\[GIF: (.*?)\]/g;
-        const parts = value.split(regex);
-        parts.forEach(part => {
-          if (part.startsWith('http')) {
-            const img = document.createElement('img');
-            img.src = part;
-            img.style.maxWidth = '150px';
-            img.style.borderRadius = '6px';
-            img.style.margin = '5px 0';
-            messagesDiv.appendChild(img);
-          } else {
-            const span = document.createElement('div');
-            span.textContent = part;
-            messagesDiv.appendChild(span);
-          }
-        });
-      } else {
-        div.textContent = value;
-        messagesDiv.appendChild(div);
-      }
-      input.value = '';
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      saveMessages();
-    }
-
-    function saveMessages() {
-      localStorage.setItem('wassup_messages', document.getElementById('chatMessages').innerHTML);
-    }
-
-    function loadMessages() {
-      const stored = localStorage.getItem('wassup_messages');
-      if (stored) {
-        document.getElementById('chatMessages').innerHTML = stored;
-      }
-      updateGifHistory();
-    }
-
-    window.onload = loadMessages;
-  </script>
 </head>
 <body>
-  <header>
-    <div style="display: flex; align-items: center; gap: 1rem;">
-      <img src="dhlg5ode.png" alt="Logo">
-      <h1>Wassup!</h1>
-    </div>
-  </header>
+  <h1>Profil</h1>
+  <form id="profileForm" enctype="multipart/form-data">
+    <label>Bio: <input type="text" name="bio" /></label><br />
+    <label>Citation: <input type="text" name="citation" /></label><br />
+    <label>Photo de profil: <input type="file" name="photo" /></label><br />
+    <label>Rendre le profil public?
+      <input type="checkbox" name="isPublic" />
+    </label><br />
+    <button type="submit">Sauvegarder</button>
+  </form>
 
-  <div class="chat-container">
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input">
-      <input type="text" id="chatInput" placeholder="Écris ton message ici...">
-      <button onclick="sendMessage()">Envoyer</button>
-      <button class="gif-toggle" onclick="toggleGifPanel()">GIF</button>
-    </div>
-    <div class="gif-panel" id="gifPanel">
-      <div class="gif-selection">
-        <img src="https://media.giphy.com/media/3o7aD2saalBwwftBIY/giphy.gif" onclick="selectGif(this.src)" />
-        <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" onclick="selectGif(this.src)" />
-        <img src="https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif" onclick="selectGif(this.src)" />
-      </div>
-      <div class="gif-history" id="gifHistory"></div>
-    </div>
-  </div>
+  <script>
+    const form = document.getElementById('profileForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
 
-  <div class="bottom-nav">
-    <a href="#">💬 Chat</a>
-    <a href="#">👤 Profil</a>
-    <a href="#">⚙️ Paramètres</a>
-    <a href="#">🔍 Explorer</a>
-  </div>
+      try {
+        const res = await fetch('http://localhost:3000/api/save-profile', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        if (data.success) alert('Profil sauvegardé !');
+      } catch (err) {
+        console.error(err);
+        alert('Erreur lors de la sauvegarde');
+      }
+    });
+  </script>
 </body>
 </html>
+
+// package.json
+{
+  "name": "wassup-app",
+  "version": "1.0.0",
+  "description": "Application Wassup! (chat, profils, explorer...)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "multer": "^1.4.5"
+  }
+}
+
+// server.js
+const express = require('express');
+const multer = require('multer');
+const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+
+const app = express();
+const PORT = 3000;
+
+app.use(cors());
+app.use(express.static('public'));
+app.use(express.json());
+
+const upload = multer({ dest: 'public/uploads/' });
+
+let profiles = [];
+
+app.post('/api/save-profile', upload.single('photo'), (req, res) => {
+  const { bio, citation, isPublic } = req.body;
+  let photoUrl = '';
+
+  if (req.file) {
+    photoUrl = '/uploads/' + req.file.filename;
+  }
+
+  const newProfile = {
+    id: Date.now(),
+    bio,
+    citation,
+    isPublic: isPublic === 'true',
+    photoUrl
+  };
+
+  const existing = profiles.findIndex(p => p.id === newProfile.id);
+  if (existing >= 0) profiles[existing] = newProfile;
+  else profiles.push(newProfile);
+
+  res.status(200).json({ success: true });
+});
+
+app.get('/api/public-profiles', (req, res) => {
+  const publicProfiles = profiles.filter(p => p.isPublic);
+  res.json(publicProfiles);
+});
+
+app.listen(PORT, () => {
+  console.log(`Serveur démarré sur http://localhost:${PORT}`);
+});
