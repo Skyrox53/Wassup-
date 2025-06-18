@@ -119,6 +119,7 @@
           push(messagesRef, {
             user: currentUser.displayName,
             uid: currentUser.uid,
+            photoURL: currentUser.photoURL || '',
             text: message,
             timestamp: Date.now(),
           });
@@ -139,6 +140,14 @@
         const msgEl = document.createElement("div");
         msgEl.classList.add("message");
 
+        const avatar = document.createElement("img");
+        avatar.classList.add("avatar");
+        avatar.src = msg.photoURL || "https://via.placeholder.com/40";
+        avatar.alt = msg.user;
+
+        const content = document.createElement("div");
+        content.classList.add("messageContent");
+
         const meta = document.createElement("div");
         meta.classList.add("meta");
         meta.textContent = `${msg.user} · ${new Date(msg.timestamp).toLocaleTimeString()}`;
@@ -147,8 +156,11 @@
         text.classList.add("text");
         text.textContent = msg.text;
 
-        msgEl.appendChild(meta);
-        msgEl.appendChild(text);
+        content.appendChild(meta);
+        content.appendChild(text);
+
+        msgEl.appendChild(avatar);
+        msgEl.appendChild(content);
         chatBox.appendChild(msgEl);
 
         if (shouldScroll) {
@@ -184,11 +196,23 @@
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
     .message {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
       margin-bottom: 1rem;
       padding: 0.5rem 1rem;
       background: #e1f5fe;
       border-left: 4px solid #039be5;
       border-radius: 4px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .messageContent {
+      flex: 1;
     }
     .meta {
       font-size: 0.75rem;
